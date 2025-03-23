@@ -1,0 +1,23 @@
+services:
+    website: 
+        image: php:apache
+        environment:
+            - USERNAME=root
+            - PASSWORD=root
+        volumes:
+            - ./website:/var/www/html
+        depends_on:
+            - supmit_api
+        ports:
+            - "8080:80"
+    supmit_api:
+        image: my_image
+        volumes:
+            - ./simple_api/student_age.json:/data/student_age.json
+        ports: 
+            - "5000:5000"
+        networks:
+            - networkName
+networks:
+    networkName:
+        driver: bridge
