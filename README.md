@@ -1,8 +1,99 @@
 
-### Creation de l'image
+# <span style="color: #6926a3"> Mini-projet : Conteneuriser une application  </span>
+---
+Réalisé par:
+<br>
+<span style="color: pink;">**`Ikrame Gouaiche`**</span>
+---
+## <span style="color: #961d05;">Objectif: </span>
+ L'objectif de ce travail est de démontrer la capacité à gérer une infrastructure Docker pour améliorer le processus de déploiement d'une application existante.
+## <span style="color: #961d05;">I. Construire (build) et tester l'API </span>
+### Construction de l'image de l'API:
+#### Création du Dockerfile
 
+<details>
+  <summary>Clicker pour afficher le code <strong><a href="./simple_api/Dockerfile">Dockerfile</a></strong></summary>
+<br>
+
+```Dockerfile
+FROM python:3.8-buster
+LABEL org.opencontainers.image.authors="Ikrame Gouaiche <gouaicheikrame@gmail.com>"
+COPY student_age.py /
+RUN  apt update -y && apt install python3-dev libsasl2-dev libldap2-dev libssl-dev -y
+COPY requirements.txt /
+RUN pip3 install -r requirements.txt
+RUN mkdir /data
+VOLUME ["/data"]
+EXPOSE 5000
+CMD ["python3", "student_age.py"]
+```
+</details>
+
+1. **Image de base :** _Utilisez l'image `python:3.8-buster` pour garantir un environnement Python 3.8 sur Debian Buster._
+
+```Dockerfile
+  FROM python:3.8-buster
+```
+> Cette commande définit l'environnement de base pour le conteneur, en utilisant Python 3.8 sur Debian Buster pour assurer la compatibilité et la stabilité.
+
+2. **Informations sur le mainteneur :** _Ajoutez des métadonnées pour identifier le responsable du Dockerfile._
+
+```Dockerfile
+  LABEL org.opencontainers.image.authors="Ikrame Gouaiche <gouaicheikrame@gmail.com>"
+```
+> Cette instruction fournit des informations sur le mainteneur, facilitant la gestion et la traçabilité du conteneur.
+
+3. **Ajout du script de l'application :** _Copiez le fichier `student_age.py` dans le conteneur._
+
+```Dockerfile
+  COPY student_age.py /
+```
+> Cette commande place le script principal de l'application dans le conteneur, prêt à être exécuté.
+
+4. **Installation des dépendances système :** _Mettez à jour les paquets et installez les bibliothèques nécessaires._
+
+```Dockerfile
+  RUN apt update -y && apt install python3-dev libsasl2-dev libldap2-dev libssl-dev -y 
+```
+> Cette étape installe les dépendances système requises pour certains modules Python.
+
+5. **Installation des dépendances Python :** _Ajoutez le fichier `requirements.txt` et installez les paquets nécessaires._
+
+```Dockerfile
+  COPY requirements.txt /
+  RUN pip3 install -r requirements.txt
+```
+> Ces commandes installent les bibliothèques Python nécessaires à l'application.
+
+6. **Création d'un répertoire de données :** _Ajoutez un répertoire `/data` pour le stockage persistant._
+
+```Dockerfile
+  RUN mkdir /data
+  VOLUME [ "/data" ]
+```
+> Ces instructions créent un répertoire pour les données et le déclarent comme volume persistant.
+
+7. **Exposition du port réseau :** _Exposez le port 5000 pour l'accès à l'application._
+
+```Dockerfile
+  EXPOSE 5000
+```
+> Cette commande indique que l'application est accessible via le port 5000.
+
+8. **Commande de démarrage :** _Définissez le script `student_age.py` comme commande par défaut._
+
+```Dockerfile
+  CMD [ "python3", "student_age.py" ]
+```
+> Cette instruction lance automatiquement l'application lorsque le conteneur démarre.
+
+📎 **Fichier Dockerfile :** [Dockerfile](./simple_api/Dockerfile)
+
+1. **Lancer l'image**
 ```powershell
 PS C:\xampp\htdocs\student_list\simple_api> docker build -t my_image .
+```
+```powershell
 [+] Building 139.7s (12/12) FINISHED                                                       docker:desktop-linux
  => [internal] load build definition from Dockerfile                                                       0.1s
  => => transferring dockerfile: 402B                                                                       0.1s 
@@ -44,10 +135,12 @@ PS C:\xampp\htdocs\student_list\simple_api> docker build -t my_image .
  => => naming to docker.io/library/my_image                                                                0.0s 
 ```
 
-### Verification
-```powershell
+#### Verification
+> l'image a été bien créé 
 ```powershell 
 docker images
+```
+```dockershell
 PS C:\xampp\htdocs\student_list\simple_api> docker images
 REPOSITORY                         TAG                 IMAGE ID       CREATED          SIZE
 my_image                           latest              782a1b499dbe   42 seconds ago   1.05GB
@@ -55,9 +148,12 @@ mongodb/mongodb-community-server   6.0.14-ubuntu2204   a1ee4d6ce0b0   5 days ago
 ubuntu                             latest              a04dc4851cbc   7 weeks ago      78.1MB
 hello-world                        latest              74cc54e27dc4   8 weeks ago      10.1kB
 ```
-### Creation de container 
+### Creation de container
 ```powershell 
 docker run --name my_container -p 5000:5000 my_image
+```
+> Cette commande crée et exécute un conteneur Docker nommé `my_container`, expose le port 5000, et utilise l'image `my_image`. Cependant, l'erreur affichée indique que le fichier `/data/student_age.json` est manquant dans le conteneur, ce qui provoque une exception `FileNotFoundError`.
+```powershell
 PS C:\xampp\htdocs\student_list\simple_api> docker run --name my_container -p 5000:5000 my_image
 Traceback (most recent call last):
   File "student_age.py", line 33, in <module>
@@ -67,6 +163,9 @@ FileNotFoundError: [Errno 2] No such file or directory: '/data/student_age.json'
 ### Ajout de fichier student_age.student à /data
 ```powershell
 docker cp student_age.json my_container:/data 
+```
+> Cette commande permet de copier un fichier local (student_age.json) dans le conteneur Docker "my_container" à l'emplacement /data. Cette action est utile pour rendre les données disponibles dans le conteneur, pour que l'API puisse les utiliser.
+```powershell
 PS C:\xampp\htdocs\student_list\simple_api> docker cp student_age.json my_container:/data
 Successfully copied 2.05kB to my_container:/data
 ```
@@ -96,7 +195,9 @@ FileNotFoundError: [Errno 2] No such file or directory: '/data/student_age.json'
  * Debugger is active!
  * Debugger PIN: 141-803-175
 ```
-### test de requete
+> Les logs montrent l'erreur initiale due au fichier manquant, puis indiquent que l'application Flask a démarré correctement après le redémarrage du conteneur. L'API est maintenant en cours d'exécution en mode debug et accessible via l'adresse 172.17.0.2:5000
+### tester l'API
+> Cette commande permet de tester l'API Flask en envoyant une requête HTTP de type GET pour obtenir les âges des étudiants.
 ```bash
 curl -u root:root -X GET http://localhost:5000/supmit/api/v1.0/get_student_ages
 _student_ages
@@ -110,7 +211,43 @@ _student_ages
     "Sara": "23" }
 }
 ```
-### build de docker-compose 
+
+## <span style="color: #961d05;">II. Infrastructure as Code </span>
+### Création de docker compose 
+
+<details>
+  <summary>Clicker pour afficher le code <strong><a href="./docker-compose.yml">docker-compose.yml</a></strong></summary>
+<br>
+
+```powershell
+services:
+    website: 
+        image: php:apache
+        environment:
+            - USERNAME=root
+            - PASSWORD=root
+        volumes:
+            - ./website:/var/www/html
+        depends_on:
+            - supmit_api
+        ports:
+            - "8080:80"
+    supmit_api:
+        image: my_image
+        volumes:
+            - ./simple_api/student_age.json:/data/student_age.json
+        ports: 
+            - "5000:5000"
+        networks:
+            - networkName
+networks:
+    networkName:
+        driver: bridge
+```
+</details>
+
+>Cette configuration décrit les deux services Docker (website et supmit_api) ainsi qu'un réseau (networkName) qui permettent de déployer l'application.
+### execution de docker-compose
 ```powershell
 docker-compose up --build
 PS C:\xampp\htdocs\student_list> docker-compose up --build
@@ -147,9 +284,63 @@ Gracefully stopping... (press Ctrl+C again to force)
  ✔ Container student_list-supmit_api-1  Stopped                                                            0.1s 
 canceled
 ```
+>cette commande a permis de démarrer les services (API et site web) en reconstruisant les images au besoin et en créant les conteneurs nécessaires.
+
 **Test**
 ![Test](liste.png)
-### Docker registry
+> L'image montre l'interface web qui interagit avec notre API. Cette page affiche les données des étudiants avec leurs âges, récupérées depuis l'API Python, démontrant que l'architecture multi-conteneurs fonctionne correctement.
+
+## <span style="color: #961d05;">III. Docker Registry </span>
+
+<details>
+  <summary>Clicker pour afficher le code <strong><a href="./docker-compose-registry.yml">docker-compose-registry.yml</a></strong></summary>
+
+```powershell
+version: '3'
+
+services:
+  registry:
+    image: registry:2
+    container_name: registry
+    ports:
+      - "5000:5000"
+    volumes:
+      - registry-data:/var/lib/registry
+    environment:
+      - REGISTRY_HTTP_HEADERS_Access-Control-Allow-Origin=["*"]
+      - REGISTRY_HTTP_HEADERS_Access-Control-Allow-Methods=["HEAD", "GET", "OPTIONS", "DELETE"]
+      - REGISTRY_HTTP_HEADERS_Access-Control-Allow-Headers=["Authorization", "Accept"]
+      - REGISTRY_HTTP_HEADERS_Access-Control-Expose-Headers=["Docker-Content-Digest"]
+    restart: always
+
+  registry-ui:
+    image: joxit/docker-registry-ui:latest
+    container_name: registry-ui
+    ports:
+      - "80:80"
+    environment:
+      - REGISTRY_URL=http://localhost:5000
+      - REGISTRY_TITLE=Registre Privé SUPMIT
+      - SINGLE_REGISTRY=true
+    restart: always
+
+volumes:
+  registry-data:
+    driver: local
+```
+
+</details>
+
+### Explication du fichier Docker Compose
+
+- **`registry`** : Il crée un registre Docker privé accessible via `http://localhost:5000`. Ce registre stocke les images Docker poussé ou tiré
+- **`registry-ui`** : Il crée une interface graphique pour gérer et visualiser les images stockées dans le registre, accessible via `http://localhost`.
+
+- **Le volume `registry-data`** : Permet de persister les données du registre, même si les conteneurs sont arrêtés ou supprimés.
+
+- **Redémarrage automatique des conteneurs** : Les conteneurs sont configurés pour redémarrer automatiquement en cas de panne.
+
+### execution de docker-compose-registry
 ```powershell
 docker-compose -f docker-compose-registry.yml up
 PS C:\xampp\htdocs\student_list> docker-compose -f docker-compose-registry.yml up
@@ -195,6 +386,8 @@ Gracefully stopping... (press Ctrl+C again to force)Watch
  ✔ Container registry     Stopped                                                           0.1s 
 canceled
 ```
+> cette commande lit le fichier docker-compose-registry.yml, crée les conteneurs définis dans ce fichier (un registre Docker privé et son interface graphique), et les démarre.
+
 ### pousser les images vers le registre privé
 ##### 1- php:apache
 ```powershell
