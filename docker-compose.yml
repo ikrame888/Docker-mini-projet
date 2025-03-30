@@ -13,7 +13,7 @@ services:
     supmit_api:
         image: my_image
         volumes:
-            - ./docker-mini-projet/student_age.json:/data/student_age.json
+            - ./simple_api/student_age.json:/student_age.json
         ports: 
             - "5000:5000"
         networks:
