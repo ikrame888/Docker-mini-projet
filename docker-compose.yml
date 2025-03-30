@@ -9,7 +9,7 @@ services:
         depends_on:
             - supmit_api
         ports:
-            - "8080:80"
+            - "8099:80"
     supmit_api:
         image: my_image
         volumes:
