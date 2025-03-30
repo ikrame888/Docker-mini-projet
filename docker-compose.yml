@@ -11,7 +11,7 @@ services:
         ports:
             - "8099:80"
     supmit_api:
-        build: ./supmit_api
+        build: ./simple_api
         volumes:
             - ./simple_api/student_age.json:/data/student_age.json
         ports: 
