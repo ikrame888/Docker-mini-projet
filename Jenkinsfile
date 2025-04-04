@@ -9,7 +9,6 @@ pipeline {
         stage('Build') {
             steps {
                 bat '''
-                rm -rf Docker-mini-projet
                 git clone https://github.com/ikrame888/Docker-mini-projet.git
                 docker-compose up --build -d
                 '''
