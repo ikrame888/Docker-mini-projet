@@ -9,7 +9,6 @@ pipeline {
         stage('Clone Repository') {
             steps {
                 sh '''
-                rm -rf Docker-mini-projet  # Clean previous clone
                 git clone https://github.com/ikrame888/Docker-mini-projet.git
                 cd Docker-mini-projet
                 '''
