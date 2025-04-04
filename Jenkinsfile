@@ -21,7 +21,7 @@ pipeline {
                 // Use cmd to pause for 10 seconds and then perform the curl request
                 bat '''
                 timeout /t 10
-                curl -u root:root -X GET http://localhost:5000/supmit/api/v1.0/get_student_ages
+                curl -u root:root -X GET http://supmit_api:5000/supmit/api/v1.0/get_student_ages
                 '''
             }
         }
