@@ -33,6 +33,7 @@ pipeline {
                     '''
                 }
             }
+        }    
         stage ('DeployReview') {
             steps {
                 bat '''
@@ -40,7 +41,6 @@ pipeline {
                 '''
             }
         }
-}
 
     }
 }
