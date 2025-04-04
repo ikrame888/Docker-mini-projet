@@ -16,7 +16,7 @@ pipeline {
         stage('Test') {
             steps {
                 bat '''
-                timeout /t 10
+                timeout /t 20
                 curl -u root:root -X GET http://localhost:5000/supmit/api/v1.0/get_student_ages
                 '''
             }
