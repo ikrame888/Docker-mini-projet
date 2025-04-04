@@ -36,7 +36,7 @@ pipeline {
         stage ('DeployReview') {
             steps {
                 sshagent(['aws-ec2']) {
-                    bat '''
+                    bash '''
                     ssh -o StrictHostKeyChecking=no ec2-user@13.60.22.150 whoami
                     '''
                 }
