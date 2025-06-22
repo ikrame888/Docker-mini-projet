@@ -738,3 +738,5 @@ Le pipeline Jenkins automatise complètement le processus de déploiement, de la
 ### 4. **Accéder à l'application**
 
 ![Accéder à l'application](accéder.png)
+
+
