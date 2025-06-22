@@ -1,6 +1,6 @@
 # Configuration Jenkins avec AWS - Guide Complet
 
-## 🏗️ Prérequis AWS
+## Prérequis AWS
 
 ### 1. Créer un compte AWS
 - Connectez-vous à [AWS Console](https://aws.amazon.com)
@@ -45,7 +45,7 @@
    - Access Key ID
    - Secret Access Key
 
-## 🚀 Configuration EC2 pour le déploiement
+## Configuration EC2 pour le déploiement
 
 ### 1. Lancer une instance EC2
 
@@ -91,7 +91,7 @@ sudo usermod -aG docker ubuntu
 sudo apt install awscli -y
 ```
 
-## ⚙️ Configuration Jenkins
+## Configuration Jenkins
 
 ### 1. Installation des plugins Jenkins
 
@@ -151,7 +151,7 @@ ID: docker-hub
    EC2 Key Pair's Private Key: ec2-ssh-key
    ```
 
-## 🔄 Jenkinsfile avec déploiement AWS
+## Jenkinsfile avec déploiement AWS
 
 Voici un Jenkinsfile modifié pour AWS :
 
@@ -240,16 +240,16 @@ pipeline {
             cleanWs()
         }
         success {
-            echo '✅ Déploiement réussi sur AWS!'
+            echo 'Déploiement réussi sur AWS!'
         }
         failure {
-            echo '❌ Échec du déploiement'
+            echo 'Échec du déploiement'
         }
     }
 }
 ```
 
-## 🔧 Script de déploiement automatisé AWS
+## Script de déploiement automatisé AWS
 
 Créez ce script sur votre instance EC2 :
 
@@ -261,7 +261,7 @@ APP_NAME="student-web-app"
 IMAGE_NAME="ikramegouaiche212003/student-web-app"
 CONTAINER_NAME="student-app"
 
-echo "🚀 Déploiement de $APP_NAME sur AWS EC2"
+echo "Déploiement de $APP_NAME sur AWS EC2"
 
 # Arrêter l'ancien conteneur
 echo "Arrêt de l'ancien conteneur..."
@@ -284,15 +284,14 @@ docker run -d \
 echo "Vérification du déploiement..."
 sleep 5
 if docker ps | grep -q $CONTAINER_NAME; then
-    echo "✅ Déploiement réussi!"
-    echo "🌐 Application accessible sur: http://$(curl -s http://169.254.169.254/latest/meta-data/public-ipv4)"
+    echo "Déploiement réussi!"
 else
-    echo "❌ Échec du déploiement"
+    echo "Échec du déploiement"
     exit 1
 fi
 ```
 
-## 📊 Monitoring et Logs
+## Monitoring et Logs
 
 ### CloudWatch Logs (Optionnel)
 ```bash
@@ -313,29 +312,7 @@ docker logs student-app
 docker logs -f student-app
 ```
 
-## 🔒 Sécurité
-
-### 1. Groupe de sécurité EC2
-```
-Port 22 (SSH) : Votre IP uniquement
-Port 80 (HTTP) : 0.0.0.0/0
-Port 443 (HTTPS) : 0.0.0.0/0
-```
-
-### 2. Rotation des clés
-- Changez régulièrement vos Access Keys AWS
-- Utilisez des rôles IAM quand possible
-
-### 3. HTTPS avec Let's Encrypt
-```bash
-# Installation Certbot
-sudo apt install certbot python3-certbot-nginx -y
-
-# Obtenir un certificat SSL
-sudo certbot --nginx -d votre-domaine.com
-```
-
-## 🎯 Résumé des étapes
+## Résumé des étapes
 
 1. ✅ Créer un compte AWS et configurer IAM
 2. ✅ Lancer une instance EC2 Ubuntu
@@ -345,4 +322,4 @@ sudo certbot --nginx -d votre-domaine.com
 6. ✅ Modifier le Jenkinsfile pour AWS
 7. ✅ Tester le pipeline complet
 
-Votre application sera accessible via l'IP publique de votre instance EC2 ! 🎉
+Votre application sera accessible via l'IP publique de votre instance EC2 !
