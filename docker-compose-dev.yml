@@ -1,0 +1,29 @@
+# Docker Compose pour le développement local
+version: '3.8'
+
+services:
+  # API Python (pour les données des étudiants)
+  student-api:
+    build: ./simple_api
+    container_name: student-api
+    ports:
+      - "5000:5000"
+    volumes:
+      - ./simple_api/student_age.json:/data/student_age.json
+    networks:
+      - student-network
+
+  # Application Web avec Nginx
+  web-app:
+    build: .
+    container_name: student-web
+    ports:
+      - "8080:80"
+    depends_on:
+      - student-api
+    networks:
+      - student-network
+
+networks:
+  student-network:
+    driver: bridge

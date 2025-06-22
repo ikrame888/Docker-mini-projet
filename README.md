@@ -1,14 +1,20 @@
-
 # <span style="color: #6926a3"> Mini-projet : Conteneuriser une application  </span>
+
 ---
+
 Réalisé par:
 <br>
 <span style="color: pink;">**`Ikrame Gouaiche`**</span>
 ---
+
 ## <span style="color: #961d05;">Objectif: </span>
+
  L'objectif de ce travail est de démontrer la capacité à gérer une infrastructure Docker pour améliorer le processus de déploiement d'une application existante.
+
 ## <span style="color: #961d05;">I. Construire (build) et tester l'API </span>
-### Construction de l'image de l'API:
+
+### Construction de l'image de l'API
+
 #### Création du Dockerfile
 
 <details>
@@ -27,6 +33,7 @@ VOLUME ["/data"]
 EXPOSE 5000
 CMD ["python3", "student_age.py"]
 ```
+
 </details>
 
 1. **Image de base :** _Utilisez l'image `python:3.8-buster` pour garantir un environnement Python 3.8 sur Debian Buster._
@@ -34,6 +41,7 @@ CMD ["python3", "student_age.py"]
 ```Dockerfile
   FROM python:3.8-buster
 ```
+
 > Cette commande définit l'environnement de base pour le conteneur, en utilisant Python 3.8 sur Debian Buster pour assurer la compatibilité et la stabilité.
 
 2. **Informations sur le mainteneur :** _Ajoutez des métadonnées pour identifier le responsable du Dockerfile._
@@ -41,6 +49,7 @@ CMD ["python3", "student_age.py"]
 ```Dockerfile
   LABEL org.opencontainers.image.authors="Ikrame Gouaiche <gouaicheikrame@gmail.com>"
 ```
+
 > Cette instruction fournit des informations sur le mainteneur, facilitant la gestion et la traçabilité du conteneur.
 
 3. **Ajout du script de l'application :** _Copiez le fichier `student_age.py` dans le conteneur._
@@ -48,6 +57,7 @@ CMD ["python3", "student_age.py"]
 ```Dockerfile
   COPY student_age.py /
 ```
+
 > Cette commande place le script principal de l'application dans le conteneur, prêt à être exécuté.
 
 4. **Installation des dépendances système :** _Mettez à jour les paquets et installez les bibliothèques nécessaires._
@@ -55,6 +65,7 @@ CMD ["python3", "student_age.py"]
 ```Dockerfile
   RUN apt update -y && apt install python3-dev libsasl2-dev libldap2-dev libssl-dev -y 
 ```
+
 > Cette étape installe les dépendances système requises pour certains modules Python.
 
 5. **Installation des dépendances Python :** _Ajoutez le fichier `requirements.txt` et installez les paquets nécessaires._
@@ -63,6 +74,7 @@ CMD ["python3", "student_age.py"]
   COPY requirements.txt /
   RUN pip3 install -r requirements.txt
 ```
+
 > Ces commandes installent les bibliothèques Python nécessaires à l'application.
 
 6. **Création d'un répertoire de données :** _Ajoutez un répertoire `/data` pour le stockage persistant._
@@ -71,6 +83,7 @@ CMD ["python3", "student_age.py"]
   RUN mkdir /data
   VOLUME [ "/data" ]
 ```
+
 > Ces instructions créent un répertoire pour les données et le déclarent comme volume persistant.
 
 7. **Exposition du port réseau :** _Exposez le port 5000 pour l'accès à l'application._
@@ -78,6 +91,7 @@ CMD ["python3", "student_age.py"]
 ```Dockerfile
   EXPOSE 5000
 ```
+
 > Cette commande indique que l'application est accessible via le port 5000.
 
 8. **Commande de démarrage :** _Définissez le script `student_age.py` comme commande par défaut._
@@ -85,14 +99,17 @@ CMD ["python3", "student_age.py"]
 ```Dockerfile
   CMD [ "python3", "student_age.py" ]
 ```
+
 > Cette instruction lance automatiquement l'application lorsque le conteneur démarre.
 
 📎 **Fichier Dockerfile :** [Dockerfile](./simple_api/Dockerfile)
 
 1. **Lancer l'image**
+
 ```powershell
 PS C:\xampp\htdocs\student_list\simple_api> docker build -t my_image .
 ```
+
 ```powershell
 [+] Building 139.7s (12/12) FINISHED                                                       docker:desktop-linux
  => [internal] load build definition from Dockerfile                                                       0.1s
@@ -136,10 +153,13 @@ PS C:\xampp\htdocs\student_list\simple_api> docker build -t my_image .
 ```
 
 #### Verification
-> l'image a été bien créé 
-```powershell 
+>
+> l'image a été bien créé
+
+```powershell
 docker images
 ```
+
 ```dockershell
 PS C:\xampp\htdocs\student_list\simple_api> docker images
 REPOSITORY                         TAG                 IMAGE ID       CREATED          SIZE
@@ -148,11 +168,15 @@ mongodb/mongodb-community-server   6.0.14-ubuntu2204   a1ee4d6ce0b0   5 days ago
 ubuntu                             latest              a04dc4851cbc   7 weeks ago      78.1MB
 hello-world                        latest              74cc54e27dc4   8 weeks ago      10.1kB
 ```
+
 ### Creation de container
-```powershell 
+
+```powershell
 docker run --name my_container -p 5000:5000 my_image
 ```
+
 > Cette commande crée et exécute un conteneur Docker nommé `my_container`, expose le port 5000, et utilise l'image `my_image`. Cependant, l'erreur affichée indique que le fichier `/data/student_age.json` est manquant dans le conteneur, ce qui provoque une exception `FileNotFoundError`.
+
 ```powershell
 PS C:\xampp\htdocs\student_list\simple_api> docker run --name my_container -p 5000:5000 my_image
 Traceback (most recent call last):
@@ -160,22 +184,30 @@ Traceback (most recent call last):
     student_age_file = open(student_age_file_path, "r")
 FileNotFoundError: [Errno 2] No such file or directory: '/data/student_age.json'
 ```
+
 ### Ajout de fichier student_age.student à /data
+
 ```powershell
 docker cp student_age.json my_container:/data 
 ```
+
 > Cette commande permet de copier un fichier local (student_age.json) dans le conteneur Docker "my_container" à l'emplacement /data. Cette action est utile pour rendre les données disponibles dans le conteneur, pour que l'API puisse les utiliser.
+
 ```powershell
 PS C:\xampp\htdocs\student_list\simple_api> docker cp student_age.json my_container:/data
 Successfully copied 2.05kB to my_container:/data
 ```
+
 ### démarrer le conteneur à nouveau
+
 ```powershell
 docker start my_container
 PS C:\xampp\htdocs\student_list\simple_api> docker start my_container
 my_container
 ```
+
 ### Vérifier les logs
+
 ```powershell
 docker logs my_container
 PS C:\xampp\htdocs\student_list\simple_api> docker logs my_container
@@ -195,9 +227,13 @@ FileNotFoundError: [Errno 2] No such file or directory: '/data/student_age.json'
  * Debugger is active!
  * Debugger PIN: 141-803-175
 ```
+
 > Les logs montrent l'erreur initiale due au fichier manquant, puis indiquent que l'application Flask a démarré correctement après le redémarrage du conteneur. L'API est maintenant en cours d'exécution en mode debug et accessible via l'adresse 172.17.0.2:5000
+>
 ### tester l'API
+>
 > Cette commande permet de tester l'API Flask en envoyant une requête HTTP de type GET pour obtenir les âges des étudiants.
+
 ```bash
 curl -u root:root -X GET http://localhost:5000/supmit/api/v1.0/get_student_ages
 _student_ages
@@ -213,7 +249,8 @@ _student_ages
 ```
 
 ## <span style="color: #961d05;">II. Infrastructure as Code </span>
-### Création de docker compose 
+
+### Création de docker compose
 
 <details>
   <summary>Clicker pour afficher le code <strong><a href="./docker-compose.yml">docker-compose.yml</a></strong></summary>
@@ -244,10 +281,13 @@ networks:
     networkName:
         driver: bridge
 ```
+
 </details>
 
 >Cette configuration décrit les deux services Docker (website et supmit_api) ainsi qu'un réseau (networkName) qui permettent de déployer l'application.
+>
 ### execution de docker-compose
+
 ```powershell
 docker-compose up --build
 PS C:\xampp\htdocs\student_list> docker-compose up --build
@@ -284,6 +324,7 @@ Gracefully stopping... (press Ctrl+C again to force)
  ✔ Container student_list-supmit_api-1  Stopped                                                            0.1s 
 canceled
 ```
+
 >cette commande a permis de démarrer les services (API et site web) en reconstruisant les images au besoin et en créant les conteneurs nécessaires.
 
 **Test**
@@ -341,6 +382,7 @@ volumes:
 - **Redémarrage automatique des conteneurs** : Les conteneurs sont configurés pour redémarrer automatiquement en cas de panne.
 
 ### execution de docker-compose-registry
+
 ```powershell
 docker-compose -f docker-compose-registry.yml up
 PS C:\xampp\htdocs\student_list> docker-compose -f docker-compose-registry.yml up
@@ -386,14 +428,18 @@ Gracefully stopping... (press Ctrl+C again to force)Watch
  ✔ Container registry     Stopped                                                           0.1s 
 canceled
 ```
+
 > cette commande lit le fichier docker-compose-registry.yml, crée les conteneurs définis dans ce fichier (un registre Docker privé et son interface graphique), et les démarre.
 
 ### pousser les images vers le registre privé
+
 ##### 1- php:apache
+
 ```powershell
 docker tag php:apache localhost:5000/php:apache
 $ docker tag php:apache localhost:5000/php:apache
 ```
+
 ```powershell
 docker push localhost:5000/php:apache
 $ docker push localhost:5000/php:apache
@@ -414,12 +460,15 @@ a5b9b405bddd: Pushed
 1287fbecdfcc: Pushed
 apache: digest: sha256:9d1452428d8750fa34ac0bb0f8719a7d23ae1d9b052d90537056d6f3e3dcdad8 size: 324
 2                         
-``` 
+```
+
 ##### 2- my_image
+
 ```powershell
 docker tag my_image localhost:5000/my_image:latest
 $ docker tag my_image localhost:5000/my_image:latest
 ```
+
 ```powershell
 docker push localhost:5000/my_image:latest
 $ docker push localhost:5000/my_image:latest
@@ -440,5 +489,234 @@ eccb9ed74974: Pushed
 latest: digest: sha256:43ffb045ed8b9b2ea6b83fa9cf4deca26a834f3696682940fd6fcdabdd73d954 size: 305
 1                         
 ```
-### Affichage 
+
+### Affichage
+
 ![registreui](image.png)
+
+## <span style="color: #961d05;">IV. Déploiement Automatisé avec CI/CD Jenkins </span>
+
+### Objectif du Pipeline CI/CD
+
+L'objectif de cette section est d'implémenter un pipeline CI/CD complet avec Jenkins pour automatiser le déploiement de notre application web dans différents environnements (Review, Staging, Production).
+
+### Architecture du Pipeline
+
+Notre pipeline suit le modèle **CI/CD** classique :
+
+#### **CI (Continuous Integration)**
+
+1. **Checkout** : Récupération du code source depuis Git
+2. **Build** : Construction de l'image Docker avec Nginx
+3. **Test** : Vérification du bon fonctionnement de l'application
+4. **Release** : Publication de l'image sur Docker Hub
+
+#### **CD (Continuous Deployment)**
+
+1. **Deploy in Review** : Déploiement pour les tests de validation
+2. **Deploy in Staging** : Déploiement en environnement de pré-production  
+3. **Deploy in Production** : Déploiement final en production (avec approbation manuelle)
+
+### Configuration Jenkins
+
+<details>
+  <summary>Clicker pour afficher le <strong><a href="./Jenkinsfile">Jenkinsfile</a></strong></summary>
+<br>
+
+```groovy
+pipeline {
+    agent any
+
+    environment {
+        DOCKER_IMAGE = "ikramegouaiche212003/student-web-app"
+        DOCKER_TAG = "${BUILD_NUMBER}"
+    }
+
+    stages {
+        stage('Checkout') {
+            steps {
+                echo 'Récupération du code source...'
+                checkout scm
+            }
+        }
+
+        stage('Build') {
+            steps {
+                echo 'Construction de l\'image Docker...'
+                bat '''
+                docker build -t %DOCKER_IMAGE%:%DOCKER_TAG% .
+                docker tag %DOCKER_IMAGE%:%DOCKER_TAG% %DOCKER_IMAGE%:latest
+                '''
+            }
+        }
+
+        stage('Test') {
+            steps {
+                echo 'Tests de l\'application...'
+                bat '''
+                docker run -d --name test-container -p 8080:80 %DOCKER_IMAGE%:latest
+                timeout /t 10
+                curl -f http://localhost:8080 || exit 1
+                docker stop test-container
+                docker rm test-container
+                '''
+            }
+        }
+
+        stage('Release') {
+            steps {
+                echo 'Publication sur Docker Hub...'
+                withCredentials([usernamePassword(credentialsId: 'docker-hub', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
+                    bat '''
+                    echo %PASSWORD% | docker login -u %USERNAME% --password-stdin
+                    docker push %DOCKER_IMAGE%:%DOCKER_TAG%
+                    docker push %DOCKER_IMAGE%:latest
+                    '''
+                }
+            }
+        }
+
+        stage('Deploy to Review') {
+            steps {
+                echo 'Déploiement en environnement de review...'
+                bat '''
+                docker run -d --name review-app -p 9001:80 %DOCKER_IMAGE%:latest
+                echo "Application déployée sur http://localhost:9001"
+                '''
+            }
+        }
+
+        stage('Deploy to Staging') {
+            steps {
+                echo 'Déploiement en environnement de staging...'
+                bat '''
+                docker run -d --name staging-app -p 9002:80 %DOCKER_IMAGE%:latest
+                echo "Application déployée sur http://localhost:9002"
+                '''
+            }
+        }
+
+        stage('Deploy to Production') {
+            when {
+                branch 'main'
+            }
+            steps {
+                echo 'Déploiement en production...'
+                input message: 'Déployer en production?', ok: 'Déployer'
+                bat '''
+                docker run -d --name prod-app -p 9003:80 %DOCKER_IMAGE%:latest
+                echo "Application déployée en production sur http://localhost:9003"
+                '''
+            }
+        }
+    }
+}
+```
+
+</details>
+
+### Dockerfile Optimisé pour le CI/CD
+
+<details>
+  <summary>Clicker pour afficher le <strong><a href="./Dockerfile">Dockerfile</a></strong> optimisé</summary>
+<br>
+
+```dockerfile
+# Dockerfile simple pour l'application web étudiante
+FROM nginx:alpine
+
+LABEL org.opencontainers.image.authors="Ikrame Gouaiche <gouaicheikrame@gmail.com>"
+LABEL org.opencontainers.image.description="Application web statique pour gestion des étudiants"
+LABEL org.opencontainers.image.version="1.0"
+
+# Installation des outils nécessaires
+RUN apk add --no-cache \
+    php82 \
+    php82-fpm \
+    php82-curl \
+    php82-json \
+    curl
+
+# Copie des fichiers de configuration Nginx
+COPY nginx.conf /etc/nginx/nginx.conf
+
+# Copie de l'application web
+COPY website/ /var/www/html/
+
+# Configuration des permissions
+RUN chown -R nginx:nginx /var/www/html && \
+    chmod -R 755 /var/www/html
+
+# Exposition du port
+EXPOSE 80
+
+# Démarrage de Nginx
+CMD ["nginx", "-g", "daemon off;"]
+```
+
+</details>
+
+### Étapes d'Exécution du Pipeline
+
+#### 1. **Prérequis Jenkins**
+
+- Jenkins installé et configuré
+- Plugin Docker installé
+- Credentials Docker Hub configurés avec l'ID `docker-hub`
+- Git configuré pour accéder au repository
+
+#### 2. **Exécution du Build**
+
+```bash
+# Construction de l'image Docker
+docker build -t ikramegouaiche212003/student-web-app:1 .
+```
+
+#### 3. **Tests Automatisés**
+
+```bash
+# Lancement du conteneur de test
+docker run -d --name test-container -p 8080:80 ikramegouaiche212003/student-web-app:latest
+
+# Test de connectivité
+curl -f http://localhost:8080
+
+# Nettoyage
+docker stop test-container && docker rm test-container
+```
+
+#### 4. **Publication Docker Hub**
+
+```bash
+# Connexion à Docker Hub
+docker login -u ikramegouaiche212003
+
+# Publication des images
+docker push ikramegouaiche212003/student-web-app:1
+docker push ikramegouaiche212003/student-web-app:latest
+```
+
+#### 5. **Déploiements Multi-Environnements**
+
+- **Review** : `http://localhost:9001` - Tests de validation
+- **Staging** : `http://localhost:9002` - Pré-production  
+- **Production** : `http://localhost:9003` - Environnement final
+
+### Avantages de cette Approche
+
+1. **🔄 Automatisation complète** : Du code au déploiement sans intervention manuelle
+2. **Sécurité** : Approbation manuelle requise pour la production
+3. **Tests intégrés** : Validation automatique à chaque étape
+4. **Traçabilité** : Chaque build est numéroté et tracé
+5. **Déploiement rapide** : Environnements multiples simultanés
+6. **Rollback facile** : Images versionnées sur Docker Hub
+
+### Résultat Final
+
+Le pipeline Jenkins automatise complètement le processus de déploiement, de la modification du code jusqu'à la mise en production, en passant par tous les environnements de test nécessaires.
+
+📎 **Fichiers de Configuration :**
+
+- [Jenkinsfile](./Jenkinsfile) - Pipeline CI/CD
+- [Dockerfile](./Dockerfile) - Image optimisée
+- [nginx.conf](./nginx.conf) - Configuration Nginx
