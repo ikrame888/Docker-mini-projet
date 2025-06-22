@@ -38,7 +38,7 @@ sudo docker run -d \
 
 echo "========================================="
 echo "✅ Déploiement terminé avec succès!"
-echo "🌐 Application accessible sur: http://$(curl -s http://13.220.160.176)"
+echo "🌐 Application accessible sur: http://13.220.160.176$(curl -s http://13.220.160.176)"
 echo "📊 Statut du conteneur:"
 sudo docker ps | grep $CONTAINER_NAME
 echo "========================================="
