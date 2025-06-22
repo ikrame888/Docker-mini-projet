@@ -704,7 +704,7 @@ docker push ikramegouaiche212003/student-web-app:latest
 
 ### Avantages de cette Approche
 
-1. **🔄 Automatisation complète** : Du code au déploiement sans intervention manuelle
+1. **Automatisation complète** : Du code au déploiement sans intervention manuelle
 2. **Sécurité** : Approbation manuelle requise pour la production
 3. **Tests intégrés** : Validation automatique à chaque étape
 4. **Traçabilité** : Chaque build est numéroté et tracé
@@ -720,3 +720,21 @@ Le pipeline Jenkins automatise complètement le processus de déploiement, de la
 - [Jenkinsfile](./Jenkinsfile) - Pipeline CI/CD
 - [Dockerfile](./Dockerfile) - Image optimisée
 - [nginx.conf](./nginx.conf) - Configuration Nginx
+
+## Deploiement de l'application
+
+### 1. **Accès au serveur**
+
+![Accès au serveur](accès.png)
+
+### 2. **Cloner le repository et installer les dépendances**
+
+![Cloner le repository](cloner.png)
+
+### 3. **Démarrer l'application**
+
+![Démarrer l'application](demarrer.png)
+
+### 4. **Accéder à l'application**
+
+![Accéder à l'application](accéder.png)
